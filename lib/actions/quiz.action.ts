@@ -13,7 +13,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 export const getQuizByCreator = async (creatorId: string) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         console.log(creatorId);
         const quiz = await Quiz.find({author: creatorId})
         
@@ -29,7 +29,7 @@ export const getQuizByCreator = async (creatorId: string) => {
 export const getQuizByParticipant = async (participantId: string) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz = await Quiz.find({
             $or: [
                 {'participants.individuals': participantId},
@@ -77,7 +77,7 @@ interface QuizProps {
 export const createQuiz = async (quiz: QuizProps) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         console.log(quiz);
     
         const assessmentList : string[] = []
@@ -126,7 +126,7 @@ export const createQuiz = async (quiz: QuizProps) => {
 export const updateQuiz = async (quiz: QuizProps) => {
 
     try{
-        connectToDatabase()
+        await connectToDatabase()
         console.log(`
 --------------------------------
 
@@ -191,7 +191,7 @@ ${quiz._id}
 
 export const toggleQuizResponse = async (quizId: string) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz = await Quiz.findById(quizId)
         quiz.isAcceptingResponses = !quiz.isAcceptingResponses
         await quiz.save()
@@ -203,7 +203,7 @@ export const toggleQuizResponse = async (quizId: string) => {
 
 export const getQuizById = async (quizId: string) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz = await Quiz.findById(quizId)
         .populate('author', '_id name email picture')
         .populate('assessments')
@@ -217,7 +217,7 @@ export const getQuizById = async (quizId: string) => {
 
 export const deleteQuiz = async (quizId: string) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz = await Quiz.findById(quizId)
         console.log(`
 Quiz flagged for deletion:
@@ -240,7 +240,7 @@ ${quiz}
 export const initializeResponse = async (quizId: string, participantId:string) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz = await Quiz.findById(quizId) as IQuiz
         if (!quiz.isAcceptingResponses) {
             return {type: 'error', message: 'Quiz is not accepting responses'}
@@ -287,7 +287,7 @@ export const initializeResponse = async (quizId: string, participantId:string) =
 export const getQuizForResponse = async (token: string) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const tokenData = await verifyToken(token) as any
         const quizId = tokenData.quizId 
         const participantId = tokenData.participantId
@@ -324,7 +324,7 @@ export const getQuizForResponse = async (token: string) => {
 
 export const updateResponse = async (responseId: string, answer: string) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         await QuizResponse.findByIdAndUpdate(responseId, {answer: answer})
         return {type: 'success', message: 'Response updated'}
     }
@@ -335,7 +335,7 @@ export const updateResponse = async (responseId: string, answer: string) => {
 
 export const submitResponse = async (response: any) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         
         const { assessments } = response 
         for (const resp of assessments) {
@@ -353,7 +353,7 @@ export const submitResponse = async (response: any) => {
 export const getQuizResponsesByCreator = async (creatorId: string, quizId: string) => {
 
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const quiz: IQuiz = await Quiz.findById(quizId) 
         .populate('assessments')
         const responses = await QuizResponse.find({quiz: quizId})
@@ -373,7 +373,7 @@ export const getQuizResponsesByCreator = async (creatorId: string, quizId: strin
 
 export const assessWithGemini = async (responseId: string) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
         const response = await QuizResponse.findById(responseId).populate('assessment') as IQuizResponse
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -398,7 +398,7 @@ export const assessWithGemini = async (responseId: string) => {
 
 export const updateQuizGrading = async (quiz: any) => {
     try {
-        connectToDatabase()
+        await connectToDatabase()
 
         quiz.assessments.map(async (assessment: IAssessment) => {
             assessment.responses.map(async (response: IQuizResponse) => {
