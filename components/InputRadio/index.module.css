@@ -1,0 +1,45 @@
+.wrapper{
+    width: 100%;
+    display: flex;
+    
+}
+
+.wrapper input[type="radio"]{
+    display: none;
+}
+
+.wrapper input[type="radio"] + label{
+    width: 100%;
+    position: relative;
+    padding: 10px;
+    border: 1px solid var(--faded);
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.wrapper input[type="radio"] + label:before{
+    content: "";
+    width: 19px;
+    height: 19px;
+    border: 1px solid var(--faded);
+    border-radius: 50%;
+    margin-right: 10px;
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    align-items: center;
+}
+
+.wrapper input[type="radio"]:checked + label{
+    background-color: var(--primary);
+}
+
+.wrapper input[type="radio"]:checked + label:before{
+    height: 16px;
+    width: 16px;
+    border: 4px solid var(--foreground);
+    background-color: var(--primary);
+    align-items: center;
+}

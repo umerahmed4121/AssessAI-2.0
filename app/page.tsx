@@ -1,113 +1,191 @@
-import Image from "next/image";
+'use client';
+import React from 'react'
+import Image from 'next/image'
+import Navbar from '@/components/Navbar'
+import { NavLinks } from '@/constants';
+import { useRouter } from 'next/navigation';
+import Loader from '@/components/Loader';
+import { FaCheckDouble } from 'react-icons/fa';
+import Footer from '@/components/Footer';
+
+const navLinks = [
+  { label: 'Home', link: '/' },
+  { label: 'About', link: '/about' },
+  { label: 'Services', link: '/services' },
+  { label: 'Contact', link: '/contact' },
+];
+
+const about1 = [
+  {
+    heading: 'Fast & Efficient',
+    description: 'Assess number of scripts in minutes.'
+  },
+  {
+    heading: 'Accurate & Fair',
+    description: 'AI-driven consistency in grading.'
+  },
+  {
+    heading: 'Insightful Analytics',
+    description: 'Get detailed performance insights.'
+  },
+  {
+    heading: 'Secure & Confidential',
+    description: 'Data privacy guaranteed.'
+  },
+  {
+    heading: 'Customizable',
+    description: 'Tailor grading criteria to your needs.'
+  },
+]
+
+/*
+How It Works
+Upload your answer scripts in digital format.
+Set the criteria and grading rubrics according to your needs.
+Let SmartGrader assess the scripts with advanced AI algorithms.
+Review and download the results and analytics.
+*/
+
+const about2 = [
+  {
+    description: 'Upload your answer scripts in digital format.'
+  },
+  {
+    description: 'Set the criteria and grading rubrics according to your needs.'
+  },
+  {
+    description: 'Let SmartGrader assess the scripts with advanced AI algorithms.'
+  },
+  {
+    description: 'Review and download the results and analytics.'
+  },
+]
 
 export default function Home() {
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      <Navbar navLinks={navLinks} />
+      <Main />
+      <About title='Why choose AssessAI?' list={about1} imagePath='/assets/about/about1.jpg' />
+      <About title='How it works?' list={about2} align='right' imagePath='/assets/about/about2.jpg' />
+      <Contact />
+      <Footer />
+    </>
+  )
+}
+
+const Main = () => {
+
+  const router = useRouter()
+  const [loading, setLoading] = React.useState(false)
+
+  return (
+    <div className='bg-[url("/assets/background-mobile.jpg")] sm:bg-[url("/assets/background.jpg")] w-full h-[94vh] sm:h-[100vh] bg-contain bg-bottom sm:bg-right-bottom bg-no-repeat'>
+      <Loader visible={loading} />
+      <div className='w-[80%] pt-[12vh] pl-[6vw] pr-[1vw] md:pt-[15vh]  lg:pt-[28vh] lg:pl-[10vh]'>
+        <h1 className='text-3xl sm:text-6xl font-bold'>
+          Welcome to AssessAI:
+          <br />
+          <span>Revolutionizing Education Assessment</span>
+        </h1>
+        <p className='mt-12 text-lg lg:text-2xl font-medium'>Unlock the Future of Learning with Automated Answer Script Assessment!</p>
+        {/* 
+            
+      'xxs': '375px',
+      'xs': '425px',
+            */}
+
+        <button
+          className='w-[55%] -3xs:w-[45%] -2xs:w-[40%] xs:w-[35%] sm:w-[27%] md:w-[22%] lg:w-[18%] xl:w-[15%] 2xl:w-[12%] mt-8 px-4 py-2 bg-secondary hover:bg-secondary-dark hover:scale-[103%] rounded-md  text-center font-bold cursor-pointer'
+          onClick={() => {
+            setLoading(true)
+            router.push('/auth/login')
+          }}
+        >
+          Get started
+        </button>
+
+
+
+      </div>
+    </div>
+  )
+}
+
+
+const About = ({ title, align = 'left', list, imagePath }: { title: string, align?: 'left' | 'right', list: any[], imagePath: string }) => {
+
+  const ListItem = ({ heading, description }: { heading?: string, description: string }) => {
+
+    return (
+      <div className='flex items-center gap-1 text-2xl'>
+        <FaCheckDouble />
+        {heading && <h2 className='font-bold'>{heading}</h2>}
+        <p>{description}</p>
+      </div>
+    )
+  }
+
+  return (
+    <section className='h-screen flex items-center'>
+
+      <div className={`w-full flex justify-between items-center ${align === 'right' ? "flex-row-reverse" : ""}`}>
+
+        <div className={`bg-secondary h-[calc(100vh-60px)] grid items-center  ${align === 'right' ? "pl-60 pr-16 rounded-tl-full" : "pl-16 pr-28 rounded-tr-full"}`}>
+
+          <div className=''>
+            <h1 className='text-5xl pb-8'>{title}</h1>
+            <ul className='flex flex-col gap-4'>
+              {list.map((item, index) => (
+                <ListItem key={index} {...item} />
+              ))}
+            </ul>
+          </div>
         </div>
+
+        <div className=''>
+          <Image
+            src={imagePath}
+            alt='about1'
+            width={600}
+            height={600}
+            className={`${align === 'right' ? "rounded-r-full" : "rounded-l-full"}`}
+          />
+        </div>
+
+
       </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+
+
+    </section>
+  )
+}
+
+const Contact = () => {
+
+  return (
+    <section className="">
+      <div className="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
+        <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">Contact Us</h2>
+        <p className="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">Got a technical issue? Want to send feedback about a beta feature? Need details about our Business plan? Let us know.</p>
+        <form action="#" className="space-y-8">
+          <div>
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Your email</label>
+            <input type="email" id="email" className="shadow-sm  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 bg-primary-light dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="name@assessai.com" required/>
+          </div>
+          <div>
+            <label htmlFor="subject" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Subject</label>
+            <input type="text" id="subject" className="block p-3 w-full text-sm text-gray-900  rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-primary-light dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Let us know how we can help you" required/>
+          </div>
+          <div className="sm:col-span-2">
+            <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Your message</label>
+            <textarea id="message" rows={6} className="block p-2.5 w-full text-sm text-gray-900  rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 bg-primary-light dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Leave a comment..."></textarea>
+          </div>
+          <button type="submit" className="bg-primary-light py-3 px-5 text-sm font-medium text-center text-white rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Send message</button>
+        </form>
       </div>
-
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    </section>
+  )
 }
