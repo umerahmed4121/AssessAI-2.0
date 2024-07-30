@@ -9,7 +9,7 @@ const DashboardPage = () => {
 
     const router = useRouter()
     const { data: session, status } = useSession()
-    const user = session?.user as SessionUser
+    const user = session?.user 
 
 
     while (status === 'loading') {

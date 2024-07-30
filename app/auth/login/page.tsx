@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import React, { useState, FormEvent, MouseEvent, useEffect } from "react"
+import React, { useState, FormEvent, MouseEvent, useEffect, Suspense } from "react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -35,7 +35,7 @@ const Login = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
-      })
+    })
     const [loading, setLoading] = useState(false)
 
     const [screen, setScreen] = useState(1)
@@ -68,6 +68,7 @@ const Login = () => {
     }
 
     return (
+
         <FormContainer>
             <Loader visible={loading} />
             {screen === 1 ?
@@ -78,7 +79,7 @@ const Login = () => {
             />
             <motion.div className="w-full flex items-center justify-center p-1">
                 <Link href="/auth/login">
-                <Image src={"/assets/logo.png"} alt="AssessAI" width={80} height={80} />
+                    <Image src={"/assets/logo.png"} alt="AssessAI" width={80} height={80} />
                 </Link>
             </motion.div>
 
@@ -90,16 +91,16 @@ const Login = () => {
             </motion.h1>
 
 
-            <form 
-            onSubmit={handleSubmit}
-            className="w-full flex flex-col justify-center items-center">
+            <form
+                onSubmit={handleSubmit}
+                className="w-full flex flex-col justify-center items-center">
                 <Input
                     required
                     name="email"
                     autoComplete="email"
                     type="email"
                     label="Email"
-                    onChange={(e) => {setFormData({...formData, email: e.target.value})}}
+                    onChange={(e) => { setFormData({ ...formData, email: e.target.value }) }}
                     value={formData.email}
                 />
 
@@ -161,7 +162,7 @@ const Login = () => {
                         required
                         label="Password"
                         autoComplete="current-password"
-                        onChange={(e) => {setFormData({...formData, password: e.target.value})}}
+                        onChange={(e) => { setFormData({ ...formData, password: e.target.value }) }}
                         value={formData.password}
                         className="mt-2"
                     />
@@ -183,8 +184,18 @@ const Login = () => {
 
 
         </FormContainer >
+
     )
 
 }
 
-export default Login;
+export function LoginPage() {
+
+    return (
+        <Suspense fallback={<Loader visible={true} />}>
+            <Login />
+        </Suspense>
+    )
+}
+
+;

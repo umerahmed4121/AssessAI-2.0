@@ -18,7 +18,7 @@ const Sidebar = () => {
 
   const router = useRouter()
   const { data: session, status } = useSession()
-  const user = session?.user as SessionUser
+  const user = session?.user || null
   const profilePicture = user?.picture ? user.picture : "/assets/icons/avatar.svg";
 
   const [loading, setLoading] = useState(false)

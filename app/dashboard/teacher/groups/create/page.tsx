@@ -35,18 +35,18 @@ const GroupsPage = () => {
   const [search, setSearch] = useState('')
 
   const { data: session, status } = useSession()
-  const user = session?.user as SessionUser
+  const user = session?.user || null
 
 
   useEffect(() => {
-    if (session) {
+    if (user) {
       setGroup({
         ...group,
         author: user._id
       })
     }
   }
-    , [session])
+    , [user])
 
 
   const toggleMembers = (student: Student) => {
@@ -124,7 +124,6 @@ const GroupsPage = () => {
               value={group.name}
             />
             <InputTextArea
-              type='text'
               label='Description'
               name='groupDescription'
               className='mt-4'

@@ -11,7 +11,7 @@ import { FaPlus, FaSearch } from 'react-icons/fa'
 const GroupPage = () => {
 
     const { data: session, status } = useSession()
-    const user = session?.user as SessionUser
+    const user = session?.user || null
 
 
     const [loading, setLoading] = useState(false)
@@ -25,11 +25,13 @@ const GroupPage = () => {
     useEffect(() => {
         const fetchGroups = async () => {
             
-            const res = await getGroupByCreator(user?._id)
+            if (user) {
+                const res = await getGroupByCreator(user?._id)
             if (res.type === 'error') {
                 console.log(res.message);
             } else if (res.type === 'success') {
                 setGroups(res.data)
+            }
             }
             
         }

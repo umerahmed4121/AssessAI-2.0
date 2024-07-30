@@ -16,7 +16,7 @@ const ResponsesPage = ({ params } : { params: { quizId: string } }) => {
     const [loading, setLoading] = useState(false)
     // Getting user_id ----------------------------------------------------
     const { data: session, status } = useSession()
-    const user = session?.user as SessionUser
+    const user = session?.user || null
 
 
     // ----------------------------------------------------------------------
@@ -52,14 +52,16 @@ const ResponsesPage = ({ params } : { params: { quizId: string } }) => {
     useEffect(() => {
 
         const fetchQuiz = async () => {
-            try {
-                const res = await getQuizResponsesByCreator(user._id, params.quizId)
-                console.log("Fetched responses",res.data)
-                setQuiz(res.data)
-                setLoading(false)
-            }
-            catch (error: any) {
-                console.log(error.message)
+            if (user) {
+                try {
+                    const res = await getQuizResponsesByCreator(user._id, params.quizId)
+                    console.log("Fetched responses",res.data)
+                    setQuiz(res.data)
+                    setLoading(false)
+                }
+                catch (error: any) {
+                    console.log(error.message)
+                } 
             }
         }
         fetchQuiz()

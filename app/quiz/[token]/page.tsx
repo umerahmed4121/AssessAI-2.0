@@ -28,7 +28,7 @@ export default function QuizResponse({ params }: { params: { token: string } }) 
     const [loading, setLoading] = useState(false)
 
     const { data: session, status } = useSession()
-    const user = session?.user as SessionUser
+    const user = session?.user || null
 
     const [response, setResponse] = useState< QuizResponseProps>(
         {

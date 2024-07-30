@@ -39,8 +39,7 @@ const Navbar = ({
 }) => {
 
     const { data: session, status } = useSession();
-    const user = session?.user as SessionUser;
-
+    const user = session?.user || null;
     const router = useRouter();
 
 

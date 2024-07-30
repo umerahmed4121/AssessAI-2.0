@@ -21,7 +21,7 @@ const Quizzes = () => {
 
     // Getting user_id ----------------------------------------------------
     const { data: session, status } = useSession()
-    const user = session?.user as SessionUser
+    const user = session?.user || null
 
 
     const [loading, setLoading] = useState(false)
@@ -31,18 +31,20 @@ const Quizzes = () => {
 
     useEffect(() => {
         const fetchQuizzes = async () => {
-            try {
-                const res = await getQuizByParticipant(user._id)
-
-                if (res.type === "success") {
-                    console.log(res.data)
-                    setQuizzes(res.data)
-                } else {
-                    console.log(res.message)
+            if (user) {
+                try {
+                    const res = await getQuizByParticipant(user._id)
+    
+                    if (res.type === "success") {
+                        console.log(res.data)
+                        setQuizzes(res.data)
+                    } else {
+                        console.log(res.message)
+                    }
+    
+                } catch (error: any) {
+                    console.log(error.message)
                 }
-
-            } catch (error: any) {
-                console.log(error.message)
             }
         }
         fetchQuizzes()
@@ -90,7 +92,9 @@ const Quizzes = () => {
                                     <button
                                         className='px-4 py-2  bg-secondary m-1 w-fit h-fit rounded-md'
                                         onClick={() => {
-                                            handleCreateResponse(quiz._id, user._id)
+                                            if (user) {
+                                                handleCreateResponse(quiz._id, user._id)
+                                            }
                                         }}
                                     >Start Quiz</button>
                                 )

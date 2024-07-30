@@ -30,25 +30,27 @@ const Page = () => {
   const tableHeaderStyle = 'bg-primary-light p-2'
 
   const { data: session, status } = useSession()
-  const user = session?.user as SessionUser
+  const user = session?.user || null
 
 
   const [quizzes, setQuizzes] = useState<[] | IQuiz[]>([])
 
   useEffect(() => {
     const fetchQuizzes = async () => {
-      try {
-        const res = await getQuizByCreator(user._id)
-        
-        if(res.type === "success"){
-          console.log(res.data)
-          setQuizzes(res.data)
-        }else{
-          console.log(res.message)
+      if (user) {
+        try {
+          const res = await getQuizByCreator(user._id)
+          
+          if(res.type === "success"){
+            console.log(res.data)
+            setQuizzes(res.data)
+          }else{
+            console.log(res.message)
+          }
+          
+        } catch (error: any) {
+          console.log(error.message)
         }
-        
-      } catch (error: any) {
-        console.log(error.message)
       }
     }
     fetchQuizzes()

@@ -25,7 +25,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import { useDebouncedCallback } from 'use-debounce'
 
 interface QuizProps {
-    _id?: string,
+  _id?: string,
   author: IUser,
   title: string,
   description: string,
@@ -53,21 +53,20 @@ interface QuizProps {
 }
 
 type assessmentFormProps = {
-    type: "CREATE" | "EDIT"
-    quizId?: string
+  type: "CREATE" | "EDIT"
+  quizId?: string
 }
 
 const QuizForm = ({
-    type,
-    quizId
+  type,
+  quizId
 }: assessmentFormProps) => {
 
 
   const router = useRouter()
 
   const { data: session, status } = useSession()
-  const user = session?.user as SessionUser
-
+  const user = session?.user || null
   const [loading, setLoading] = useState(false)
 
   const [showParticipants, setShowParticipants] = useState(false)
@@ -77,7 +76,7 @@ const QuizForm = ({
 
   const [quiz, setQuiz] = useState<QuizProps>({
     _id: quizId,
-    author: user,
+    author: user!,
     title: 'Quiz title',
     description: 'Quiz description',
     assessments: assessments,
@@ -95,7 +94,7 @@ const QuizForm = ({
     }
   }, [session])
 
-  
+
   const handleAddQuestion = () => {
     setQuiz({ ...quiz, assessments: [...quiz.assessments, { totalMarks: 5, question: '', answer: '' }] })
   };
@@ -105,7 +104,7 @@ const QuizForm = ({
     updatedAssessments[index][key] = value;
     setQuiz({ ...quiz, assessments: updatedAssessments });
   };
-  
+
 
   const handleDeleteQuestion = (index: number) => {
     const updatedAssessments = [...quiz.assessments];
@@ -118,8 +117,8 @@ const QuizForm = ({
 
   const handleQuizCreation = async () => {
     console.log(quiz);
-    const res =  await createQuiz(quiz)
-    if(res.type === "success") {
+    const res = await createQuiz(quiz)
+    if (res.type === "success") {
       toast.success(res.message)
       router.push('/dashboard/teacher/quizzes')
     }
@@ -131,8 +130,8 @@ const QuizForm = ({
 
   const handleQuizEdit = async () => {
     console.log(quiz);
-    const res =  await updateQuiz(quiz)
-    if(res.type === "success") {
+    const res = await updateQuiz(quiz)
+    if (res.type === "success") {
       toast.success(res.message)
     }
     else {
@@ -146,34 +145,132 @@ const QuizForm = ({
   }
 
 
+  useEffect(() => {
+    if (type === "EDIT" && quizId) {
+      const fetchData = async () => {
+        const res = await getQuizById(quizId)
+        console.log(res.data);
+        if (res.type === "success") {
+          const quiz = res.data as IQuiz
 
-  if (type === "EDIT" && quizId) {
-    useEffect(() => {
-        const fetchData = async () => {
-            const res = await getQuizById(quizId)
-            console.log(res.data);
-            if(res.type === "success") {
-                const quiz = res.data as IQuiz
-
-                setQuiz(quiz)
-            }
+          setQuiz(quiz)
         }
-        fetchData()
-    }, [])
-  }
+      }
+      fetchData()
+    }
+
+  }, [])
+
+
 
 
 
   return (
     <>
-    <ToastContainer />
-    
-    <div className='grid grid-cols-1 2xl:grid-cols-[60%,38%] 2xl:gap-[2%] justify-center 2xl:justify-normal  w-full md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-full'>
-      
-      <Loader visible={loading} dashboard={true} />
+      <ToastContainer />
 
-      <div className={`fixed border border-primary-light-2 bg-primary-light ${showParticipants ? "w-[100%] sm:w-[70%]" : "hidden w-0 opacity-0"} h-screen right-0 top-[60px] transition-all duration-500`}>
-        <div className='w-full bg-primary-light py-4 flex flex-col justify-center rounded-md h-[calc(100vh-113px)]'>
+      <div className='grid grid-cols-1 2xl:grid-cols-[60%,38%] 2xl:gap-[2%] justify-center 2xl:justify-normal  w-full md:w-[80%] lg:w-[70%] xl:w-[60%] 2xl:w-full'>
+
+        <Loader visible={loading} dashboard={true} />
+
+        <div className={`fixed border border-primary-light-2 bg-primary-light ${showParticipants ? "w-[100%] sm:w-[70%]" : "hidden w-0 opacity-0"} h-screen right-0 top-[60px] transition-all duration-500`}>
+          <div className='w-full bg-primary-light py-4 flex flex-col justify-center rounded-md h-[calc(100vh-113px)]'>
+            <div className='flex flex-row justify-between gap-2 w-full py-1 px-4'>
+              <h1 className='text-center text-xl py-2'>Participants</h1>
+              <div className='flex flex-row justify-center items-center gap-2'>
+                <div >
+                  Responses
+                </div>
+
+                <ToggleButton
+                  enable={quiz.isAcceptingResponses}
+                  onChange={() => setQuiz({ ...quiz, isAcceptingResponses: !quiz.isAcceptingResponses })}
+                  className={"w-16 h-8"}
+                  circleClassName={"w-6 h-6"}
+                />
+
+
+
+              </div>
+
+            </div>
+
+
+            {/* Participants */}
+
+            <Participants
+              quiz={quiz}
+              setQuiz={setQuiz}
+            />
+
+          </div>
+        </div>
+
+
+        <div className='w-full  flex flex-col '>
+          <div className="fixed bottom-[5%] right-[5%] flex gap-4">
+            <button
+              className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-md flex 2xl:hidden justify-center items-center transition duration-500 delay-200 hover:scale-105 '
+              onClick={() => toggleShowParticipants()}
+            >
+              <BsThreeDotsVertical className='text-white text-3xl' />
+
+            </button>
+            {type === "CREATE" && (
+              <button
+                className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-full flex justify-center items-center transition duration-500 delay-200 hover:scale-105 '
+                onClick={() => handleQuizCreation()}
+              >
+                <MdSend className='text-white text-3xl' />
+
+              </button>)}
+            {type === "EDIT" && (
+              <button
+                className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-full flex justify-center items-center transition duration-500 delay-200 hover:scale-105 '
+                onClick={() => handleQuizEdit()}
+              >
+                <RiSave3Line className='text-white text-3xl' />
+
+              </button>
+            )}
+          </div>
+
+          <input
+            type="text"
+            className='bg-primary m-1 p-1 focus:border-b-2 border-primary-light focus:outline-none w-full text-3xl text-center '
+            value={quiz.title}
+            onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
+          />
+          <input
+            type="text"
+            className='bg-primary m-1 p-1 focus:border-b-2 border-primary-light focus:outline-none w-full text-2xl text-center text-white italic'
+            value={quiz.description}
+            onChange={(e) => setQuiz({ ...quiz, description: e.target.value })}
+          />
+
+          {quiz.assessments.map((assessment, index) => (
+            <QuestionCard
+              type='CREATE'
+              key={index}
+              index={index}
+              totalMarks={assessment.totalMarks}
+              question={assessment.question}
+              answer={assessment.answer}
+              onMarksChange={(value) => handleQuestionChange(index, 'totalMarks', value)}
+              onQuestionChange={(value) => handleQuestionChange(index, 'question', value)}
+              onAnswerChange={(value) => handleQuestionChange(index, 'answer', value)}
+              onDelete={handleDeleteQuestion}
+            />
+          ))}
+          <button
+            className='bg-secondary p-2 m-1 rounded-md w-1/4 self-center '
+            onClick={handleAddQuestion}
+          >
+            Add Question
+          </button>
+
+        </div>
+        <div className='w-full bg-primary-light hidden 2xl:py-4 2xl:flex 2xl:flex-col justify-center border border-primary-light-2 rounded-md h-[calc(100vh-63px)]'>
           <div className='flex flex-row justify-between gap-2 w-full py-1 px-4'>
             <h1 className='text-center text-xl py-2'>Participants</h1>
             <div className='flex flex-row justify-center items-center gap-2'>
@@ -197,6 +294,7 @@ const QuizForm = ({
 
           {/* Participants */}
 
+
           <Participants
             quiz={quiz}
             setQuiz={setQuiz}
@@ -204,103 +302,6 @@ const QuizForm = ({
 
         </div>
       </div>
-
-
-      <div className='w-full  flex flex-col '>
-        <div className="fixed bottom-[5%] right-[5%] flex gap-4">
-          <button
-            className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-md flex 2xl:hidden justify-center items-center transition duration-500 delay-200 hover:scale-105 '
-            onClick={() => toggleShowParticipants()}
-          >
-            <BsThreeDotsVertical className='text-white text-3xl' />
-
-          </button>
-         {type === "CREATE" && (
-           <button
-           className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-full flex justify-center items-center transition duration-500 delay-200 hover:scale-105 '
-           onClick={() => handleQuizCreation()}
-         >
-           <MdSend className='text-white text-3xl' />
-
-         </button>)}
-         {type === "EDIT" && (
-          <button
-          className='bg-secondary w-10 h-10 sm:w-14 sm:h-14  rounded-full flex justify-center items-center transition duration-500 delay-200 hover:scale-105 '
-          onClick={() => handleQuizEdit()}
-        >
-          <RiSave3Line  className='text-white text-3xl' />
-
-        </button>
-         )}
-        </div>
-
-        <input
-          type="text"
-          className='bg-primary m-1 p-1 focus:border-b-2 border-primary-light focus:outline-none w-full text-3xl text-center '
-          value={quiz.title}
-          onChange={(e) => setQuiz({ ...quiz, title: e.target.value })}
-        />
-        <input
-          type="text"
-          className='bg-primary m-1 p-1 focus:border-b-2 border-primary-light focus:outline-none w-full text-2xl text-center text-white italic'
-          value={quiz.description}
-          onChange={(e) => setQuiz({ ...quiz, description: e.target.value })}
-        />
-
-        {quiz.assessments.map((assessment, index) => (
-          <QuestionCard
-            type='CREATE'
-            key={index}
-            index={index}
-            totalMarks={assessment.totalMarks}
-            question={assessment.question}
-            answer={assessment.answer}
-            onMarksChange={(value) => handleQuestionChange(index, 'totalMarks', value)}
-            onQuestionChange={(value) => handleQuestionChange(index, 'question', value)}
-            onAnswerChange={(value) => handleQuestionChange(index, 'answer', value)}
-            onDelete={handleDeleteQuestion}
-          />
-        ))}
-        <button
-          className='bg-secondary p-2 m-1 rounded-md w-1/4 self-center '
-          onClick={handleAddQuestion}
-        >
-          Add Question
-        </button>
-
-      </div>
-      <div className='w-full bg-primary-light hidden 2xl:py-4 2xl:flex 2xl:flex-col justify-center border border-primary-light-2 rounded-md h-[calc(100vh-63px)]'>
-        <div className='flex flex-row justify-between gap-2 w-full py-1 px-4'>
-          <h1 className='text-center text-xl py-2'>Participants</h1>
-          <div className='flex flex-row justify-center items-center gap-2'>
-            <div >
-              Responses
-            </div>
-
-            <ToggleButton
-              enable={quiz.isAcceptingResponses}
-              onChange={() => setQuiz({ ...quiz, isAcceptingResponses: !quiz.isAcceptingResponses })}
-              className={"w-16 h-8"}
-              circleClassName={"w-6 h-6"}
-            />
-
-
-
-          </div>
-
-        </div>
-
-
-        {/* Participants */}
-
-         
-        <Participants
-          quiz={quiz}
-          setQuiz={setQuiz}
-        />
-
-      </div>
-    </div>
     </>
   )
 }
@@ -435,7 +436,7 @@ const Participants = (
         <div className='bg-primary-light h-full py-3 pr-6 border-y border-r rounded-r-full'><FaSearch /></div>
       </div>
 
-      
+
       <div className='w-full bg-primary-light h-48 my-4 rounded-md'>
         <ul className='w-full h-full overflow-y-auto p-2'>
           {participants?.map(participant => (
@@ -471,9 +472,9 @@ const Participants = (
       <div className='w-full bg-primary-light h-48 my-4 rounded-md'>
         <ul className='w-full h-full overflow-y-auto p-2'>
           {[...quiz.participants.individuals, ...quiz.participants.groups]?.map(participant => {
-            if(participant.type === "INDIVIDUAL") {
+            if (participant.type === "INDIVIDUAL") {
               const individual = participant as IUser
-              
+
               return (
                 <li key={individual._id} className='flex flex-row items-center justify-between p-2 border-b border-faded'>
                   <div className='flex flex-row items-center gap-2'>
@@ -486,16 +487,16 @@ const Participants = (
                     />
                     <div className='flex flex-col'>
                       <p className='font-semibold'>{individual.name}</p>
-  
+
                       <p className='text-sm'>{individual.email}</p>
                     </div>
                   </div>
-                  <button className='w-10 h-10 flex items-center justify-center' onClick={() =>  removeIndividual(individual)}>
+                  <button className='w-10 h-10 flex items-center justify-center' onClick={() => removeIndividual(individual)}>
                     <CiCircleRemove className='w-full text-3xl' />
                   </button>
                 </li>
               )
-            } else if(participant.type === "GROUP") {
+            } else if (participant.type === "GROUP") {
               const group = participant as IGroup
               return (
                 <li key={group._id} className='flex flex-row items-center justify-between p-2 border-b border-faded'>
@@ -512,12 +513,12 @@ const Participants = (
                     </div>
                   </div>
                   <button className='w-10 h-10 flex items-center justify-center' onClick={() => removeGroup(group)}>
-                  <CiCircleRemove className='w-full text-3xl' />
+                    <CiCircleRemove className='w-full text-3xl' />
                   </button>
                 </li>
               )
             }
-            
+
           })}
         </ul>
       </div>
