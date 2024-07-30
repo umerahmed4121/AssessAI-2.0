@@ -7,7 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
 
-export const { auth, handlers } = NextAuth({
+export const { auth, signIn, signOut, handlers } = NextAuth({
     providers: [
         CredentialsProvider({
             name: "Credentials",
