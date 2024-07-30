@@ -189,7 +189,7 @@ const Login = () => {
 
 }
 
-export function LoginPage() {
+export default function LoginPage() {
 
     return (
         <Suspense fallback={<Loader visible={true} />}>
